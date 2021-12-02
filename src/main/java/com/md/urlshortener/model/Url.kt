@@ -1,26 +1,28 @@
 package com.md.urlshortener.model
 
+import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
 class Url @JvmOverloads constructor(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        var id: Integer,
+        var id: Integer?,
 
         var shortUrl: String,
 
         var longUrl: String,
 
-//        var creationDate:LocalDateTime= LocalDateTime.now()
+        var creationDate: LocalDateTime = LocalDateTime.now()
 ) {
 
-    fun copyUrl(url: Url):Url{
-        val result = Url(id, shortUrl, longUrl)
+    fun copyUrl(url: Url): Url {
+        val result = Url(id, shortUrl, longUrl, creationDate)
 
-        result.id=url.id
-        result.shortUrl=url.shortUrl
-        result.longUrl=url.longUrl
+        result.id = url.id
+        result.shortUrl = url.shortUrl
+        result.longUrl = url.longUrl
+        result.creationDate = url.creationDate
 
         return result
     }
