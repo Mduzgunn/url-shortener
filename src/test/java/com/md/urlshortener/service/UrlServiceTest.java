@@ -18,6 +18,7 @@ import static org.mockito.Mockito.mock;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public class UrlServiceTest {
@@ -45,6 +46,13 @@ public class UrlServiceTest {
         );
     }
 
+    public List<Url> generateUrlList(){
+        return List.of(generateUrl());
+    }
+    public List<UrlDto> generateUrlDtoList(){
+        return List.of(generateUrlDto());
+    }
+
     @BeforeEach
     void setUp() {
         urlRepository = mock(UrlRepository.class);
@@ -58,7 +66,7 @@ public class UrlServiceTest {
 //    void testGetPostList_itShouldReturnListOfPostDto() {
 
     @Test
-    void testGetUrlById_itShouldReturnUrlDto() {
+    void testGetUrlById_itShouldReturnShortUrl() {
         Url url = generateUrl();
 
         Mockito.when(urlRepository.findByShortUrl(url.getShortUrl())).thenReturn(Optional.of(url));
@@ -71,6 +79,35 @@ public class UrlServiceTest {
     }
 
 
+    @Test
+    void testGetUrl_itShouldReturn() throws URISyntaxException {
+        Url url = generateUrl();
+        URI uri = new URI(url.getLongUrl());
 
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(uri);
+        Mockito.when(urlRepository.findByShortUrl(url.getShortUrl())).thenReturn(Optional.of(url));
+
+        HttpHeaders result = urlService.getUrl(url.getShortUrl());
+        assertEquals(httpHeaders, result);
+    }
+
+
+    @Test
+    void testGetUrlList_itShouldReturnListOfUrlDto(){
+
+        List<Url> urlList = generateUrlList();
+        List<UrlDto> urlDtoList = generateUrlDtoList();
+
+        Mockito.when(urlRepository.findAll()).thenReturn(urlList);
+        Mockito.when(urlDtoConverter.convertToUrlDtoList(urlList)).thenReturn(urlDtoList);
+
+        List<UrlDto> result = urlService.getUrlDtoList();
+
+        assertEquals(urlDtoList,result);
+
+        Mockito.verify(urlRepository).findAll();
+        Mockito.verify(urlDtoConverter).convertToUrlDtoList(urlList);
+    }
 
 }
