@@ -1,8 +1,10 @@
 package com.md.urlshortener.service;
 
+import com.md.urlshortener.TestSupport;
 import com.md.urlshortener.dto.UrlDto;
 import com.md.urlshortener.dto.converter.UrlDtoConverter;
 import com.md.urlshortener.dto.request.CreateShortUrlRequest;
+import com.md.urlshortener.exception.UrlNotFoundException;
 import com.md.urlshortener.model.Url;
 import com.md.urlshortener.repository.UrlRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,41 +19,15 @@ import static org.mockito.Mockito.mock;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public class UrlServiceTest {
+public class UrlServiceTest extends TestSupport {
 
     private UrlRepository urlRepository;
     private UrlDtoConverter urlDtoConverter;
 
     private UrlService urlService;
-
-    public CreateShortUrlRequest generateShortUrl() {
-        return new CreateShortUrlRequest("short_url", "long_url");
-    }
-
-    public Url generateUrl() {
-        return new Url(
-                99,
-                "longUrl",
-                ""
-        );
-    }
-
-    public UrlDto generateUrlDto() {
-        return new UrlDto(
-                "", "", LocalDateTime.now()
-        );
-    }
-
-    public List<Url> generateUrlList(){
-        return List.of(generateUrl());
-    }
-    public List<UrlDto> generateUrlDtoList(){
-        return List.of(generateUrlDto());
-    }
 
     @BeforeEach
     void setUp() {
@@ -66,7 +42,7 @@ public class UrlServiceTest {
 //    void testGetPostList_itShouldReturnListOfPostDto() {
 
     @Test
-    void testGetUrlById_itShouldReturnShortUrl() {
+    void testGetUrlByShortUrl_itShouldReturnShortUrl() {
         Url url = generateUrl();
 
         Mockito.when(urlRepository.findByShortUrl(url.getShortUrl())).thenReturn(Optional.of(url));
@@ -80,7 +56,7 @@ public class UrlServiceTest {
 
 
     @Test
-    void testGetUrl_itShouldReturn() throws URISyntaxException {
+    void testGetUrl_itShouldReturnShortUrlToLongUrl() throws URISyntaxException {
         Url url = generateUrl();
         URI uri = new URI(url.getLongUrl());
 
@@ -108,6 +84,57 @@ public class UrlServiceTest {
 
         Mockito.verify(urlRepository).findAll();
         Mockito.verify(urlDtoConverter).convertToUrlDtoList(urlList);
+    }
+
+
+    @Test
+    void testCreateUrl_whenGetValidRequest_itShouldReturnUrlDto() {
+
+        CreateShortUrlRequest createShortUrlRequest = generateCreateShortUrlRequest();
+        Url expectedUrl = generateUrl();
+      //  UrlDto expectedUrlDto = generateUrlDto();
+
+        Mockito.when(urlRepository.save(expectedUrl)).thenReturn(expectedUrl);
+       // Mockito.when(urlDtoConverter.convertToUrlDto(expectedUrl)).thenReturn(expectedUrlDto);
+
+
+        String result = urlService.createShortUrl(createShortUrlRequest);
+
+        assertEquals(expectedUrl.getShortUrl()+"url id -> "+ null,result);
+
+        Mockito.verify(urlRepository).save(expectedUrl);
+        Mockito.verify(urlDtoConverter).convertToUrlDto(urlRepository.save(expectedUrl));
+    }
+
+
+    @Test
+    void testDeleteUrl_whenExistId_itShouldReturnString() {
+
+        Url expectedUrl = generateUrl();
+        UrlDto expectedUrlDto = generateUrlDto();
+
+
+        Mockito.when(urlRepository.findById(99)).thenReturn(Optional.of(expectedUrl));
+        Mockito.when(urlDtoConverter.convertToUrlDto(expectedUrl)).thenReturn(expectedUrlDto);
+
+
+        String result = urlService.deleteUrlById(99);
+
+        assertEquals("url deleted successfully " + 99 , result);
+
+        Mockito.verify(urlRepository).findById(99);
+        Mockito.verify(urlDtoConverter).convertToUrlDto(expectedUrl);
+    }
+
+    @Test
+    void testDeleteUrl_whenNotExistId_itShouldThrowUrlNotFoundException() {
+
+        Mockito.when(urlRepository.findById(99)).thenThrow(UrlNotFoundException.class);
+
+        assertThrows(UrlNotFoundException.class, () -> urlService.getUrlById(99));
+
+        Mockito.verify(urlRepository).findById(99);
+        Mockito.verifyNoInteractions(urlDtoConverter);
     }
 
 }

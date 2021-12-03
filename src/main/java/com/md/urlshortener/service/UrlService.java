@@ -61,6 +61,14 @@ public class UrlService {
 
         return "short url -> " + url.getShortUrl() + "\n"+"url id -> " + url.getId();
     }
+//    public UserDto createUser(CreateUserRequest createUserRequest){
+//
+//        User user = new User(
+//                createUserRequest.getUsername(),
+//                createUserRequest.getEmail()
+//        );
+//        return userDtoConverter.convertToUserDto(userRepository.save(user));
+//    }
 
     public UrlDto getUrlById(Integer id) {
         return urlDtoConverter.convertToUrlDto(findUrlById(id));
