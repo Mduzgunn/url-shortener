@@ -1,15 +1,13 @@
 package com.md.urlshortener.model
 
-import org.hibernate.annotations.GenericGenerator
 import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
 class Url @JvmOverloads constructor(
         @Id
-        @GeneratedValue(generator = "UUID")
-        @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-        var id: String? = "",
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        var id: Integer?,
 
         var shortUrl: String,
 

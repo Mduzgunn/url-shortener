@@ -11,6 +11,7 @@ public class TestSupport {
 
     public Url generateUrl() {
         return new Url(
+                22,
                 "shortUrl",
                 "longUrl"
         );
