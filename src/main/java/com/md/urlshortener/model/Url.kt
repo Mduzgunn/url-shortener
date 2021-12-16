@@ -1,5 +1,6 @@
 package com.md.urlshortener.model
 
+import com.md.urlshortener.service.UrlService
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -7,7 +8,7 @@ import javax.persistence.*
 class Url @JvmOverloads constructor(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        var id: Integer?,
+        var id: Int?,
 
         var shortUrl: String,
 

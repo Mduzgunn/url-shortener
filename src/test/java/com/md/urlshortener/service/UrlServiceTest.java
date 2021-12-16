@@ -91,16 +91,14 @@ public class UrlServiceTest extends TestSupport {
     void testCreateUrl_whenGetValidRequest_itShouldReturnUrlDto() {
 
         CreateShortUrlRequest createShortUrlRequest = generateCreateShortUrlRequest();
-        Url expectedUrl = generateUrl();
-      //  UrlDto expectedUrlDto = generateUrlDto();
+        Url expectedUrl = generateUrl();UrlDto expectedUrlDto = generateUrlDto();
 
         Mockito.when(urlRepository.save(expectedUrl)).thenReturn(expectedUrl);
-       // Mockito.when(urlDtoConverter.convertToUrlDto(expectedUrl)).thenReturn(expectedUrlDto);
+        Mockito.when(urlDtoConverter.convertToUrlDto(expectedUrl)).thenReturn(expectedUrlDto);
 
         String result = urlService.createShortUrl(createShortUrlRequest);
 
-        assertEquals("short url -> " + createShortUrlRequest.getShortUrl() + expectedUrl.getId(),result);
-        //assertEquals(urlService.getUrl(expectedUrl));
+        assertEquals("short url -> " + expectedUrlDto.getShortUrl() + expectedUrl.getId(),result);
 
         Mockito.verify(urlRepository).save(expectedUrl);
         Mockito.verify(urlDtoConverter).convertToUrlDto(urlRepository.save(expectedUrl));
