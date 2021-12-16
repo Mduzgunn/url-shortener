@@ -97,10 +97,10 @@ public class UrlServiceTest extends TestSupport {
         Mockito.when(urlRepository.save(expectedUrl)).thenReturn(expectedUrl);
        // Mockito.when(urlDtoConverter.convertToUrlDto(expectedUrl)).thenReturn(expectedUrlDto);
 
-
         String result = urlService.createShortUrl(createShortUrlRequest);
 
-        assertEquals(expectedUrl.getShortUrl()+"url id -> "+ null,result);
+        assertEquals("short url -> " + createShortUrlRequest.getShortUrl() + expectedUrl.getId(),result);
+        //assertEquals(urlService.getUrl(expectedUrl));
 
         Mockito.verify(urlRepository).save(expectedUrl);
         Mockito.verify(urlDtoConverter).convertToUrlDto(urlRepository.save(expectedUrl));
